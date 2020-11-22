@@ -1,0 +1,53 @@
+MODEL 1
+remark vina result:    12.0    0.00    0.00
+remark status:
+remark 1 A between
+root 8 B between
+
+MODEL 2
+remark vina result:    13.0    0.00    0.00
+remark status:
+remark 1 A between
+root 9 B between
+
+MODEL 3
+remark vina result:    14.0    0.00    0.00
+remark status:
+remark 1 A between
+root 8 B between
+
+MODEL 4
+remark vina result:    15.0    0.00    0.00
+remark status:
+remark 1 A between
+root 8 B between
+
+MODEL 5
+remark vina result:    16.0    0.00    0.00
+remark status:
+remark 1 A between
+root 8 B between
+
+MODEL 6
+remark vina result:    17.0    0.00    0.00
+remark status:
+remark 1 A between
+root 8 B between
+
+MODEL 7
+remark vina result:    18.0    0.00    0.00
+remark status:
+remark 1 A between
+root 8 B between
+
+MODEL 8
+remark vina result:    19.0    0.00    0.00
+remark status:
+remark 1 A between
+root 8 B between
+
+MODEL 9
+remark vina result:    20.0    0.00    0.00
+remark status:
+remark 1 A between
+root 8 B between
