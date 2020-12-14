@@ -26,9 +26,9 @@ int main(void){
     int num = 0;  // 抽出したいMODELの数
     int len = 0;  // MODELあたりの行数
     int index[1000];  // MODELNumber
-    char data[150000][50];
+    char data[600000][12];
     char model[20];
-    char new_index[5];
+    char new_index[10];
     int i, j;
     int flag = 0;
     int tmp;
@@ -51,7 +51,6 @@ int main(void){
         return -1;
     }
 
-
     // data配列に全データを格納
     for(i = 0; i < sizeof(data)/sizeof(data[0]) && fgets(data[i], sizeof(data[i]), fp1); i++){
     line++;  // dataの行数
@@ -73,11 +72,11 @@ int main(void){
         index[num] = i;
         printf("%d ", i);
         num++;
-        if(i == 1000){
+        if(i == 10000){
             flag = 1;
         }
     }
-    // MODEL1000がデータに含まれていない場合の処理
+    // MODEL10000がデータに含まれていない場合の処理
     if(flag == 0){
         data[line - len][0] = '\0';
     }
@@ -90,19 +89,31 @@ int main(void){
         flag = 0;
         if(isdigit(data[i][7])){
             if(isdigit(data[i][8])){
+                if(isdigit(data[i][9])){
+                }
+                // MODEL番号が三桁の場合
+                else{
+                    data[i][10] = data[i][9];
+                    data[i][9] = data[i][8];
+                    data[i][8] = data[i][7];
+                    data[i][7] = data[i][6];
+                    data[i][6] = '0';
+                }
             }
             // MODEL番号が二桁の場合
             else{
-                data[i][9] = data[i][8];
-                data[i][8] = data[i][7];
-                data[i][7] = data[i][6];
+                data[i][10] = data[i][8];
+                data[i][9] = data[i][7];
+                data[i][8] = data[i][6];
+                data[i][7] = '0';
                 data[i][6] = '0';
             }
         }
         // MODEL番号が一桁の場合
         else{
-            data[i][9] = data[i][7];
-            data[i][8] = data[i][6];
+            data[i][10] = data[i][7];
+            data[i][9] = data[i][6];
+            data[i][8] = '0';
             data[i][7] = '0';
             data[i][6] = '0';
         }
@@ -113,13 +124,18 @@ int main(void){
             tmp = get_digit(index[j]);
             // MODEL番号が一桁の場合の処理
             if(tmp == 1){
-                sprintf(new_index, "00%d", index[j]);
+                sprintf(new_index, "000%d", index[j]);
                 flag = 1;
             }
             // MODEL番号が二桁の場合の処理
             else if(tmp == 2){
-                sprintf(new_index, "0%d", index[j]);
+                sprintf(new_index, "00%d", index[j]);
                 flag = 2;
+            }
+            // MODEL番号が三桁の場合の処理
+            else if(tmp == 3){
+                sprintf(new_index, "0%d", index[j]);
+                flag = 3;
             }
             else{
                 sprintf(new_index, "%d", index[j]);
@@ -127,20 +143,30 @@ int main(void){
             sprintf(model, "MODEL %s", new_index);
 
             // MODEL番号が一致する場合、内容を取得
-            if(strncmp(data[i], model, 9) == 0){
+            if(strncmp(data[i], model, 10) == 0){
                 // MODEL番号が一桁の場合の処理
                 if(flag == 1){
                     data[i][6] = data[i][8];
                     data[i][7] = data[i][9];
-                    data[i][8] = '\0';
+                    data[i][8] = '\n';
                     data[i][9] = '\0';
+                    data[i][10] = '\0';
                 }
                 // MODEL番号が二桁の場合の処理
                 if(flag == 2){
-                    data[i][6] = data[i][7];
-                    data[i][7] = data[i][8];
+                    data[i][6] = data[i][8];
+                    data[i][7] = data[i][9];
                     data[i][8] = '\n';
                     data[i][9] = '\0';
+                    data[i][10] = '\0';
+                }
+                // MODEL番号が三桁の場合の処理
+                if(flag == 3){
+                    data[i][6] = data[i][7];
+                    data[i][7] = data[i][8];
+                    data[i][8] = data[i][9];
+                    data[i][9] = '\n';
+                    data[i][10] = '\0';
                 }
                 printf("Extracting %s", data[i]);
                 // MODELデータを出力
