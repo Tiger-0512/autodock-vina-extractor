@@ -8,6 +8,6 @@ If you try this, run the following commands.<br>
 ```
 $ git clone https://github.com/Tiger-0512/autodock-vina-extractor.git
 $ cd autodock-vina-extractor
-$ ./run
+$ ./cmake-build-debug/autodock_vina_extractor
 ```
 
