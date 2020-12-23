@@ -1,0 +1,6 @@
+.idea
+main
+UTP.sh
+data_extractor_ver1.c
+/cmake-build-debug/*
+!/cmake-build-debug/autodock_vina_extractor

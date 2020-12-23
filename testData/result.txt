@@ -1,4 +1,4 @@
-MODEL 04
+MODEL 4
 REMARK VINA RESULT:      -6.2      6.148      8.072
 REMARK  14 active torsions:
 REMARK  status: ('A' for Active; 'I' for Inactive)

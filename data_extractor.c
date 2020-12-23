@@ -1,47 +1,41 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include <stdio.h> //FILE構造体, fopen, fclose, fgetc, fgets, fseekで使用
+#include <stdlib.h> //malloc, freeで使用
 
 
-// 引数の桁数を判定する関数
-unsigned int get_digit(unsigned int n){
-    unsigned int digit = 1;
-    while (n /= 10) {
-        ++digit;
-    };
-    return digit;
-}
+int fgsds(char **buf, const char *fname, int lines, int *len);
+int fgl(const char *fname);
+int fglen(int *len, const char *fname);
 
 
-int main(void){
-    FILE *fp1;
+int main(void) {
+    //fgsds関数の実行
+    const char *fname1 = "../testData/UTP_out.pdbqt"; //MODEL抽出前のファイル
+    const char *fname2 = "../testData/extracted_number.txt"; //抽出するMODELナンバーを含むファイル
+    const char *fname3 = "../testData/result.txt"; //出力用ファイル
+
+    int lines = fgl(fname1); //fgl関数を用いて、ファイルの行数を取得
+    int *len = (int *)malloc(lines * sizeof(int)); //int型の配列lenの配列数（行数）を設定
+    fglen(len, fname1); //fglen関数を用いて、配列lenに行ごとのバイト数を入れる
+    char **buf = (char **)malloc(lines * sizeof(char *)); //格納配列[buf]に行数を確保
+    for (int i = 0; i < lines; i++) {
+        buf[i] = (char *)malloc((len[i] + 1) * sizeof(char)); //各行に文字列を格納するメモリを確保
+    }
+    fgsds(buf, fname1, lines, len); //fgsds関数を用いて、二次元配列bufにファイルの文字列データを格納
+
+    /*
+    //実行結果の確認
+    printf("＜bufの格納データは以下のとおり＞\n");
+    for (int i = 0; i < lines; i++) {
+        printf("%s", buf[i]);
+    }
+    */
+
     FILE *fp2;
     FILE *fp3;
-    char fname1[] = "./testData/UTP_out.pdbqt";  // 変更してください
-    char fname2[] = "./testData/extracted_number.txt";  // 変更してください
-    char fname3[] = "./testData/result.txt";  // 変更してください
-
-    int line = 0;  // テキストファイルの行数
-    int num = 0;  // 抽出したいMODELの数
-    int len = 0;  // MODELあたりの行数
-    int index[1000];  // MODELNumber
-    char data[600000][12];
-    char model[20];
-    char new_index[10];
-    int i, j;
-    int flag = 0;
-    int tmp;
-
-
-    // ファイルを開く、失敗するとNULLを返す
-    fp1 = fopen(fname1, "r");
+    //ファイルオープン
     fp2 = fopen(fname2, "r");
     fp3 = fopen(fname3, "w");
-    if(fp1 == NULL) {
-        printf("%s file not open!\n", fname1);
-        return -1;
-    }
+    //ファイルを開けない場合エラーを出力
     if(fp2 == NULL) {
         printf("%s file not open!\n", fname2);
         return -1;
@@ -51,127 +45,28 @@ int main(void){
         return -1;
     }
 
-    // data配列に全データを格納
-    for(i = 0; i < sizeof(data)/sizeof(data[0]) && fgets(data[i], sizeof(data[i]), fp1); i++){
-    line++;  // dataの行数
-    }
-    for(i = 1; i < line; i++){
-        len++;
-        if((int)data[i][0] == 'M'){
-            break;
-        }
-    }
-    fclose(fp1);
-
-
-    // 抽出したいMODELの数：len
-    // MODELNumber：index
-    i = 0;
+    //取得するMODELナンバーを格納
+    int *MODEL;
+    int index_len;
+    int i = 0;
+    MODEL = (int*)malloc(index_len * sizeof(int));
     printf("MODEL Number: ");
-    while(fscanf(fp2, "%d", &i) != EOF) {
-        index[num] = i;
+    while (fscanf(fp2, "%d", &i) != EOF) {
+        MODEL[index_len] = i;
         printf("%d ", i);
-        num++;
-        if(i == 10000){
-            flag = 1;
-        }
+        index_len++;
     }
-    // MODEL10000がデータに含まれていない場合の処理
-    if(flag == 0){
-        data[line - len][0] = '\0';
-    }
-    fclose(fp2);
 
-
+    //MODELの抽出
     printf("\n\nstart extraction...\n\n");
-    // 格納データのMODEL番号の行についてループ
-    for(i = 0; i < line; i = i + len){
-        flag = 0;
-        if(isdigit(data[i][7])){
-            if(isdigit(data[i][8])){
-                if(isdigit(data[i][9])){
-                }
-                // MODEL番号が三桁の場合
-                else{
-                    data[i][10] = data[i][9];
-                    data[i][9] = data[i][8];
-                    data[i][8] = data[i][7];
-                    data[i][7] = data[i][6];
-                    data[i][6] = '0';
-                }
-            }
-            // MODEL番号が二桁の場合
-            else{
-                data[i][10] = data[i][8];
-                data[i][9] = data[i][7];
-                data[i][8] = data[i][6];
-                data[i][7] = '0';
-                data[i][6] = '0';
-            }
-        }
-        // MODEL番号が一桁の場合
-        else{
-            data[i][10] = data[i][7];
-            data[i][9] = data[i][6];
-            data[i][8] = '0';
-            data[i][7] = '0';
-            data[i][6] = '0';
-        }
-
-        // 取得したいMODEL番号についてループ
-        for(j = 0; j < num; j++){
-            flag = 0;
-            tmp = get_digit(index[j]);
-            // MODEL番号が一桁の場合の処理
-            if(tmp == 1){
-                sprintf(new_index, "000%d", index[j]);
-                flag = 1;
-            }
-            // MODEL番号が二桁の場合の処理
-            else if(tmp == 2){
-                sprintf(new_index, "00%d", index[j]);
-                flag = 2;
-            }
-            // MODEL番号が三桁の場合の処理
-            else if(tmp == 3){
-                sprintf(new_index, "0%d", index[j]);
-                flag = 3;
-            }
-            else{
-                sprintf(new_index, "%d", index[j]);
-            }
-            sprintf(model, "MODEL %s", new_index);
-
-            // MODEL番号が一致する場合、内容を取得
-            if(strncmp(data[i], model, 10) == 0){
-                // MODEL番号が一桁の場合の処理
-                if(flag == 1){
-                    data[i][6] = data[i][8];
-                    data[i][7] = data[i][9];
-                    data[i][8] = '\n';
-                    data[i][9] = '\0';
-                    data[i][10] = '\0';
-                }
-                // MODEL番号が二桁の場合の処理
-                if(flag == 2){
-                    data[i][6] = data[i][8];
-                    data[i][7] = data[i][9];
-                    data[i][8] = '\n';
-                    data[i][9] = '\0';
-                    data[i][10] = '\0';
-                }
-                // MODEL番号が三桁の場合の処理
-                if(flag == 3){
-                    data[i][6] = data[i][7];
-                    data[i][7] = data[i][8];
-                    data[i][8] = data[i][9];
-                    data[i][9] = '\n';
-                    data[i][10] = '\0';
-                }
-                printf("Extracting %s", data[i]);
-                // MODELデータを出力
-                for(j = i; j < i + len; j++){
-                    fputs(data[j], fp3);
+    int model_len = 86;
+    for (i = 0; i < index_len; i++) {
+        for (int j = 0; j < (MODEL[index_len - 1] + 1); j++) {
+            if (MODEL[i] == j) {
+                printf("Extracting MODEL %d\n", j);
+                //MODELデータを出力
+                for(int k = ((j - 1) * model_len); k < ((j - 1) * model_len) + model_len; k++){
+                    fputs(buf[k], fp3);
                 }
                 break;
             }
@@ -179,6 +74,79 @@ int main(void){
     }
     fclose(fp3);
 
+    //メモリの解放
+    for (i = 0; i < lines; i++) {
+        free(buf[i]); //各行のメモリを解放
+    }
+    free(buf);
+    free(len);
+    free(MODEL);
+
     printf("\nfinish extraction\n");
+    return 0;
+}
+
+//fgsds関数（二次元配列を使ってファイル内の文字列データを行ごとに格納する関数）
+int fgsds(char **buf, const char *fname, int lines, int *len) {
+    FILE *fp = fopen(fname, "rb");
+    if (fp == NULL) {
+        printf("file open error!\n");
+        return -1;
+    }
+    for (int i = 0; i < lines && fgets(buf[i], len[i] + 1, fp) != NULL; i++) {}
+    fclose(fp);
+    return 0;
+}
+
+//fgl関数（ファイルの行数を取得する関数）
+int fgl(const char *fname) {
+    FILE *fp = fopen(fname, "rb");
+    int c;
+    int lines = 0; //行をカウントする変数
+    if (fp == NULL) {
+        printf("file open error!\n");
+        return -1;
+    }
+    while (1) {
+        c = fgetc(fp);
+        if (c == '\n') { //改行があるたびに行をカウント（なお、fgetsの場合'\n'を改行として認識する）
+            lines++;
+        } else if (c == EOF) { //最終行に改行がされていない場合も1行として拾うための処置
+            lines++;
+            break;
+        }
+    }
+    fclose(fp);
+    return lines;
+}
+
+//fglen関数（ポインタ[len]にファイルの行ごとのバイト長を格納する）
+int fglen(int *len, const char *fname) {
+    FILE *fp = fopen(fname, "rb");
+    int c;
+    int i = 0;
+    int byt = 0; //バイト数のカウント用
+    int bytc = 0; //変数bytの一時コピー用
+    if (fp == NULL) {
+        printf("file open error!\n");
+        return -1;
+    }
+    while (1) {
+        c = fgetc(fp);
+        byt++;
+        if (c == '\n') {
+            len[i] = byt - bytc;
+            i++;
+            bytc = byt; //bytの数値をbytcにコピー
+        } else if (c == EOF) {
+            if ((byt - bytc) <= 1) { //最後が改行で終わっている場合
+                len[i] = 0;
+            } else {
+                len[i] = byt - bytc; //最後が改行で終わっていない場合
+            }
+            break;
+        }
+    }
+    fclose(fp);
     return 0;
 }
