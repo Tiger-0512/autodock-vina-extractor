@@ -1,13 +1,21 @@
-# autodock-vina-extractor
-This is for [AutoDock Vina](http://vina.scripps.edu/)
+# Autodock Vina Extractor
+This is for [AutoDock Vina](http://vina.scripps.edu/) to extract the model data<br>
 
-You can use this to extract model data to use in AutoDock Vina.<br>
-Change the fname in `data_extractior.c` to your own file name when you use this.<br>
-With testData, you can run the example.<br>
-If you try this, run the following commands.<br>
+## Environments
+```
+gcc: 12.0.0
+cmake: 3.19.2
+```
+
+## Usage
 ```
 $ git clone https://github.com/Tiger-0512/autodock-vina-extractor.git
-$ cd autodock-vina-extractor
-$ ./cmake-build-debug/autodock_vina_extractor
+$ sh run.sh
 ```
 
+## Note
+If you use your own data,
+- Change the `fname` in `data_extractor.c` to your own file path.
+- Change the `model_len` in `data_extractor.c` to your model's length.
+
+If you don't change the `fname` and `model_len`, You can try the example with test data.
