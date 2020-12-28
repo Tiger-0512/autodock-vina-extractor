@@ -1,6 +1,18 @@
-.idea
-main
-UTP.sh
-data_extractor_ver1.c
-/cmake-build-debug/*
+# Version Management files
+/data_extractor_ver*
+
+# Cmake files
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
+cmake-build-debug/*
 !/cmake-build-debug/autodock_vina_extractor
