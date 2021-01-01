@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 
@@ -7,8 +8,8 @@ int main(void){
     FILE *fp1;
     FILE *fp2;
     FILE *fp3;
-    char fname1[] = "../testData/UTP_out.pdbqt";  // Change this
-    char fname2[] = "../testData/extracted_number.txt";  // Change this
+    char fname1[] = "../testData/extracted_number.txt";  // Change this
+    char fname2[] = "../testData/UTP_out.pdbqt";  // Change this
     char fname3[] = "../testData/result.txt";  // Change this
 
     // ファイルを開く、失敗するとNULLを返す
@@ -29,16 +30,25 @@ int main(void){
     }
 
 
-    int i = 0;
+    int num;
     int index_len = 0;  // 抽出したいMODELの数
-    int index[1000];  // MODELNumber
-    printf("MODEL Number: ");
-    while(fscanf(fp2, "%d", &i) != EOF) {
-        index[index_len] = i;
-        printf("%d ", i);
+    int i = 0;
+    int *index;  // MODELNumber
+
+    while (fscanf(fp1, "%d", &num) != EOF) {
         index_len++;
     }
-    fclose(fp2);
+    rewind(fp1);
+    index = (int*)malloc(index_len * sizeof(int));  // MODELNumberの数のメモリを確保
+
+    printf("MODEL Number: ");
+    while (fscanf(fp1, "%d", &num) != EOF) {
+        index[i] = num;
+        printf("%d ", num);
+        i++;
+    }
+    fclose(fp1);
+
 
 
     printf("\n\nstart extraction...\n\n");
@@ -50,7 +60,7 @@ int main(void){
     int flag = -1;
     int k = 0;
 
-    while (fgets(a, 200, fp1) != NULL) {
+    while (fgets(a, 200, fp2) != NULL) {
         if (a[0] == 'M') {
             sscanf(a, "%s %d", temp, &model_num);
             for (int j = 0; j < index_len; j++) {
@@ -69,6 +79,7 @@ int main(void){
         }
         k++;
     }
+    fclose(fp2);
     fclose(fp3);
 
     printf("\nfinish extraction\n");
