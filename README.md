@@ -2,8 +2,8 @@
 This is for [AutoDock Vina](http://vina.scripps.edu/) to extract the model data<br>
 
 ## Environments
-- gcc: 12.0.0
-- cmake: 3.19.2
+- gcc 12.0.0
+- cmake 3.19.2
 
 
 ## Usage
