@@ -50,9 +50,8 @@ int main(void){
     fclose(fp1);
 
 
-
-    printf("\n\nstart extraction...\n\n");
     // 格納データのMODEL番号の行についてループ
+    printf("\n\nstart extraction...\n\n");
     char a[200];
     char temp[20];
     int model_num;
